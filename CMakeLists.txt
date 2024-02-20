@@ -25,19 +25,34 @@ foreach(PACKAGE
 
 endforeach()
 
-include_directories(include)
+add_library(${PROJECT_NAME} INTERFACE)
+ament_target_dependencies(${PROJECT_NAME} INTERFACE
+    rclcpp geometry_msgs nav_msgs sensor_msgs std_msgs
+)
 
-# add_libary(${PROJECT_NAME} SHARED
-    # src/utilities.cpp
-# )
-# ament_target_dependencies(utilities
-  # rclcpp geometry_msgs nav_msgs sensor_msgs std_msgs
-# )
+target_include_directories(${PROJECT_NAME} INTERFACE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include>"
+)
 
-# install(TARGETS
-#     utilities
-#     DESTINATION lib/${PROJECT_NAME}
-# )
+ament_export_targets("export_${PROJECT_NAME}")
+ament_export_dependencies(
+    rclcpp geometry_msgs nav_msgs sensor_msgs std_msgs
+)
+
+install(
+  TARGETS ${PROJECT_NAME}
+  EXPORT "export_${PROJECT_NAME}"
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib
+  INCLUDES DESTINATION include
+)
+
+install(
+    DIRECTORY include/
+    DESTINATION include
+)
 
 ament_python_install_package(${PROJECT_NAME})
 

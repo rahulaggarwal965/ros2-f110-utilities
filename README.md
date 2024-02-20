@@ -2,6 +2,19 @@
 
 A collection of utilities for common tasks.
 
+## Usage
+
+In order to use `utilities` in your ROS2 package, you must have the following. First, in your `package.xml`:
+```xml
+<depend>utilities</depend>
+```
+
+Second, and more importantly, in your `CMakeLists.txt`
+```cmake
+find_package(utilities REQUIRED)
+ament_target_dependencies(target utilities)
+```
+
 ## Python
 
 ### [Params](./utilities/params.py)
@@ -25,4 +38,11 @@ This module is designed to make debugging through visualization easier. You can 
 from utilities.vis import ...
 ```
 
-## C++ (Coming Soon)
+## C++ (Partial)
+
+### [Params](./include/utilities/params.h)
+This module is designed to make declaring and getting parameter values exceptionally easy.
+
+```cpp
+#include "utilities/params.h"
+```
