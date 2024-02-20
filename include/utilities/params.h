@@ -4,7 +4,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 template<typename T>
-T get_param(rclcpp::Node &node, const std::string &param_name, T default_value) {
+T get_param(rclcpp::Node &node, const std::string &param_name, const T &default_value) {
     node.declare_parameter(param_name, default_value);
     const auto param = node.get_parameter(param_name).get_value<T>();
     auto upper_param_name = param_name;
