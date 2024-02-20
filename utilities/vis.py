@@ -8,7 +8,7 @@ from sensor_msgs.msg import LaserScan
 
 __all__ = ["vis_scan", "vis_point"]
 
-def _pub_to_topic(node: Node, topic: str, msg) -> Publisher:
+def _pub_to_topic(node: Node, topic: str, msg):
     """ Create (if needed) the publisher for the given topic on
       the node and publish the given message to said topic
     """
