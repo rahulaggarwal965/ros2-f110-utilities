@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cmath>
 
 inline constexpr double deg2rad(double deg) {
