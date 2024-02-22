@@ -6,17 +6,18 @@ PARAMS_FILE="$3"
 
 shift 3
 
-SHELL_NAME=$(basename ${SHELL})
+SHELL_NAME="$(basename ${SHELL})"
+CONFIG_DIR="src/${PACKAGE_NAME}/config"
 
 tmux new-session -d -s ${PACKAGE_NAME}
 tmux send-keys "source install/setup.${SHELL_NAME}" Enter
 tmux send-keys "ros2 launch f1tenth_stack bringup_launch.py" "C-l"
 tmux split-window -h
 tmux send-keys "source install/setup.${SHELL_NAME}" Enter
-tmux send-keys "ros2 run ${PACKAGE_NAME} ${NODE_NAME} --ros-args --params-file ${PARAMS_FILE} ${@}" "C-l"
+tmux send-keys "ros2 run ${PACKAGE_NAME} ${NODE_NAME} --ros-args --params-file ${CONFIG_DIR}/${PARAMS_FILE} ${@}" "C-l"
 tmux split-window -v -t 1
-tmux send-keys "cd $(dirname ${PARAMS_FILE})" Enter
-tmux send-keys "vim $(basename ${PARAMS_FILE})" Enter
+tmux send-keys "cd ${CONFIG_DIR}" Enter
+tmux send-keys "vim ${PARAMS_FILE}" Enter
 tmux new-window
 tmux send-keys "colcon build --packages-up-to ${PACKAGE_NAME}" "C-l"
 tmux select-window -t ${PACKAGE_NAME}:0
