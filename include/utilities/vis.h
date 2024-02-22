@@ -19,6 +19,8 @@ static void _pub_to_topic(rclcpp::Node &node, const std::string &topic,  const T
     }
 }
 
+namespace vis {
+
 inline void vis_scan(
     rclcpp::Node &node,
     const std::string &topic,
@@ -55,4 +57,6 @@ inline void vis_point(
     msg.point.x = point[0];
     msg.point.y = point[1];
     _pub_to_topic(node, topic, msg);
+}
+
 }
