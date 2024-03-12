@@ -1,12 +1,13 @@
-from typing import Dict
+from typing import Dict, List
 
 import numpy as np
-from geometry_msgs.msg import PointStamped
+from geometry_msgs.msg import PointStamped, Point
 from rclpy.node import Node
 from rclpy.publisher import Publisher
 from sensor_msgs.msg import LaserScan
+from visualization_msgs.msg import Marker
 
-__all__ = ["vis_scan", "vis_point"]
+__all__ = ["vis_scan", "vis_point", "vis_points"]
 
 def _pub_to_topic(node: Node, topic: str, msg):
     """ Create (if needed) the publisher for the given topic on
@@ -76,3 +77,27 @@ def vis_point(node: Node, topic: str, point: np.ndarray, frame: str):
     msg.point.x = point[0]
     msg.point.y = point[1]
     _pub_to_topic(node, topic, msg)
+
+def vis_points(node: Node, topic: str, points: np.ndarray, frame: str, color: List[float] = [1.0, 0.0, 0.0, 1.0]):
+    if points.ndim == 1:
+        points = points[None]
+
+    msg = Marker()
+    msg.header.stamp = node.get_clock().now().to_msg()
+    msg.header.frame_id = frame
+    msg.ns = topic
+    msg.id = 0
+    msg.type = Marker.POINTS
+    msg.action = Marker.ADD
+    msg.points = [Point(x=point[0], y=point[1]) for point in points]
+    msg.pose.orientation.w = 1.0
+    msg.scale.x = 0.1
+    msg.scale.y = 0.1
+    msg.scale.z = 0.1
+    msg.color.r = color[0]
+    msg.color.g = color[1]
+    msg.color.b = color[2]
+    msg.color.a = color[3]
+    _pub_to_topic(node, topic, msg)
+
+
