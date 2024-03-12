@@ -78,7 +78,7 @@ def vis_point(node: Node, topic: str, point: np.ndarray, frame: str):
     msg.point.y = point[1]
     _pub_to_topic(node, topic, msg)
 
-def vis_points(node: Node, topic: str, points: np.ndarray, frame: str, color: List[float] = [1.0, 0.0, 0.0, 1.0]):
+def vis_points(node: Node, topic: str, points: np.ndarray, frame: str, scale: float = 0.1, color: List[float] = [1.0, 0.0, 0.0, 1.0]):
     if points.ndim == 1:
         points = points[None]
 
@@ -91,9 +91,9 @@ def vis_points(node: Node, topic: str, points: np.ndarray, frame: str, color: Li
     msg.action = Marker.ADD
     msg.points = [Point(x=point[0], y=point[1]) for point in points]
     msg.pose.orientation.w = 1.0
-    msg.scale.x = 0.1
-    msg.scale.y = 0.1
-    msg.scale.z = 0.1
+    msg.scale.x = scale
+    msg.scale.y = scale
+    msg.scale.z = scale
     msg.color.r = color[0]
     msg.color.g = color[1]
     msg.color.b = color[2]
