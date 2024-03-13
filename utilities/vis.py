@@ -79,6 +79,23 @@ def vis_point(node: Node, topic: str, point: np.ndarray, frame: str):
     _pub_to_topic(node, topic, msg)
 
 def vis_points(node: Node, topic: str, points: np.ndarray, frame: str, scale: float = 0.1, color: List[float] = [1.0, 0.0, 0.0, 1.0]):
+    """Visualizes an array of points
+
+    Parameters
+    ----------
+    node : Node
+        The node that should publish the message
+    topic : str
+        The topic to publish the message to
+    points : np.ndarray
+        An array of points. May be of shape (2,) or (N, 2)
+    frame : str
+        The TF frame the message should be associated with
+    scale : float, optional
+        The size of the visualized points, by default 0.1
+    color : List[float], optional
+        The RGBA color (in range 0.0-1.0) of the visualized points, by default red
+    """
     if points.ndim == 1:
         points = points[None]
 
