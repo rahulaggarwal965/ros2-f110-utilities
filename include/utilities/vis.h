@@ -5,6 +5,7 @@
 
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <geometry_msgs/msg/point_stamped.hpp>
+#include <visualization_msgs/msg/marker.hpp>
 #include <unordered_map>
 
 
@@ -56,6 +57,37 @@ inline void vis_point(
     msg.header.frame_id = frame;
     msg.point.x = point[0];
     msg.point.y = point[1];
+    _pub_to_topic(node, topic, msg);
+}
+
+inline void vis_points(
+    rclcpp::Node &node,
+    const std::string &topic,
+    const std::vector<geometry_msgs::msg::Point> &points,
+    const std::string &frame,
+    float scale = 0.1f,
+    const std::array<float, 4> &color = {1.0f, 0.0f, 0.0f, 1.0f}
+) {
+    using Marker = visualization_msgs::msg::Marker;
+    Marker msg;
+    msg.header.stamp = node.get_clock()->now();
+    msg.header.frame_id = frame;
+    msg.ns = topic;
+    msg.id = 0;
+    msg.type = Marker::POINTS;
+    msg.action = Marker::ADD;
+
+    msg.points = points;
+
+    msg.scale.x = scale;
+    msg.scale.y = scale;
+    msg.scale.z = scale;
+
+    msg.color.r = color[0];
+    msg.color.g = color[1];
+    msg.color.b = color[2];
+    msg.color.a = color[3];
+
     _pub_to_topic(node, topic, msg);
 }
 
