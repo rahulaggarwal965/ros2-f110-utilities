@@ -23,6 +23,7 @@ ament_target_dependencies(target utilities)
 | **scan**   | [`utilities.scan`](./utilities/scan.py)     | [`"utilities/scan.h"`](./include/utilities/scan.h)     | Utilities for LIDAR range scans                           |
 | **math**   | [`numpy`](https://numpy.org/doc/stable/)    | [`"utilities/math.h"`](./include/utilities/math.h)     | Common useful math functions                              |
 | **vis**    | [`utilities.vis`](./utilities/vis.py)       | [`"utilities/vis.h"`](./include/utilities/vis.h)       | Visualize common ROS2 datatypes *without* the boilerplate |
+| **se3**    | [`utilities.se3`](./utilities/se3.py)       | TODO                                                   | Operate on SE3 matrices generated from ROS2 messages      |
 
 ### Example Usage (Python)
 
