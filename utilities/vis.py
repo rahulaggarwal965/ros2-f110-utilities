@@ -7,7 +7,7 @@ from rclpy.publisher import Publisher
 from sensor_msgs.msg import LaserScan
 from visualization_msgs.msg import Marker
 
-__all__ = ["vis_scan", "vis_point", "vis_points"]
+__all__ = ["vis_scan", "vis_point", "vis_points", "vis_path", "vis_lines"]
 
 def _pub_to_topic(node: Node, topic: str, msg):
     """ Create (if needed) the publisher for the given topic on
@@ -57,6 +57,7 @@ def vis_scan(node: Node, topic: str, ranges: np.ndarray, frame: str, angle_min: 
     msg.angle_max = angle_min + len(ranges) * angle_increment
     _pub_to_topic(node, topic, msg)
 
+# TODO(rahul): refactor below into something better
 def vis_point(node: Node, topic: str, point: np.ndarray, frame: str):
     """Visualizes a point
 
@@ -117,4 +118,35 @@ def vis_points(node: Node, topic: str, points: np.ndarray, frame: str, scale: fl
     msg.color.a = color[3]
     _pub_to_topic(node, topic, msg)
 
+def vis_path(node: Node, topic: str, points: np.ndarray, frame: str, scale: float = 0.1, color: List[float] = [1.0, 0.0, 0.0, 1.0]):
+    msg = Marker()
+    msg.header.stamp = node.get_clock().now().to_msg()
+    msg.header.frame_id = frame
+    msg.ns = topic
+    msg.id = 0
+    msg.type = Marker.LINE_STRIP
+    msg.points = [Point(x=point[0], y=point[1]) for point in points]
+    msg.pose.orientation.w = 1.0
+    msg.scale.x = scale
+    msg.color.r = color[0]
+    msg.color.g = color[1]
+    msg.color.b = color[2]
+    msg.color.a = color[3]
+    _pub_to_topic(node, topic, msg)
+
+def vis_lines(node: Node, topic: str, lines: np.ndarray, frame: str, scale: float = 0.1, color: List[float] = [1.0, 0.0, 0.0, 1.0]):
+    msg = Marker()
+    msg.header.stamp = node.get_clock().now().to_msg()
+    msg.header.frame_id = frame
+    msg.ns = topic
+    msg.id = 0
+    msg.type = Marker.LINE_LIST
+    msg.points = [Point(x=point[0], y=point[1]) for point in lines.reshape(-1, 2)]
+    msg.pose.orientation.w = 1.0
+    msg.scale.x = scale
+    msg.color.r = color[0]
+    msg.color.g = color[1]
+    msg.color.b = color[2]
+    msg.color.a = color[3]
+    _pub_to_topic(node, topic, msg)
 
