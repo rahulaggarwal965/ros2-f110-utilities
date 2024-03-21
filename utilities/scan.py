@@ -42,6 +42,18 @@ def angle_at_index(index: int, angle_min: float, angle_increment: float) -> floa
     return angle_min + angle_increment * index
 
 def scan_to_cloud(scan_msg: LaserScan) -> np.ndarray:
+    """Converts a LaserScan message into a array of points
+
+    Parameters
+    ----------
+    scan_msg : LaserScan
+        ROS2 LaserScan message
+
+    Returns
+    -------
+    np.ndarray
+        An array of points relative to the laser frame
+    """
     ranges = np.asarray(scan_msg.ranges)
     angles = np.arange(scan_msg.angle_min, scan_msg.angle_max, scan_msg.angle_increment)
     cos_sin = np.column_stack([np.cos(angles), np.sin(angles)])
