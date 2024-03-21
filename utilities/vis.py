@@ -57,27 +57,25 @@ def vis_scan(node: Node, topic: str, ranges: np.ndarray, frame: str, angle_min: 
     msg.angle_max = angle_min + len(ranges) * angle_increment
     _pub_to_topic(node, topic, msg)
 
-# TODO(rahul): refactor below into something better
-def vis_point(node: Node, topic: str, point: np.ndarray, frame: str):
-    """Visualizes a point
-
-    Parameters
-    ----------
-    node : Node
-        The node that should publish the message
-    topic : str
-        The topic to publish the message to
-    point : np.ndarray
-        The point
-    frame : str
-        The TF frame the message should be associated with
-    """
-    msg = PointStamped()
+def _vis_points(node: Node, topic: str, points: np.ndarray, frame: str, marker_type: int, scale: float = 0.1, color: List[float] = [1.0, 0.0, 0.0, 1.0]):
+    msg = Marker()
     msg.header.stamp = node.get_clock().now().to_msg()
     msg.header.frame_id = frame
-    msg.point.x = point[0]
-    msg.point.y = point[1]
+    msg.ns = topic
+    msg.id = 0
+    msg.type = marker_type
+    msg.action = Marker.ADD
+    msg.points = [Point(x=point[0], y=point[1]) for point in points]
+    msg.pose.orientation.w = 1.0
+    msg.scale.x = scale
+    msg.scale.y = scale
+    msg.scale.z = scale
+    msg.color.r = color[0]
+    msg.color.g = color[1]
+    msg.color.b = color[2]
+    msg.color.a = color[3]
     _pub_to_topic(node, topic, msg)
+
 
 def vis_points(node: Node, topic: str, points: np.ndarray, frame: str, scale: float = 0.1, color: List[float] = [1.0, 0.0, 0.0, 1.0]):
     """Visualizes an array of points
@@ -100,53 +98,65 @@ def vis_points(node: Node, topic: str, points: np.ndarray, frame: str, scale: fl
     if points.ndim == 1:
         points = points[None]
 
-    msg = Marker()
-    msg.header.stamp = node.get_clock().now().to_msg()
-    msg.header.frame_id = frame
-    msg.ns = topic
-    msg.id = 0
-    msg.type = Marker.POINTS
-    msg.action = Marker.ADD
-    msg.points = [Point(x=point[0], y=point[1]) for point in points]
-    msg.pose.orientation.w = 1.0
-    msg.scale.x = scale
-    msg.scale.y = scale
-    msg.scale.z = scale
-    msg.color.r = color[0]
-    msg.color.g = color[1]
-    msg.color.b = color[2]
-    msg.color.a = color[3]
-    _pub_to_topic(node, topic, msg)
+    _vis_points(node, topic, points, frame, Marker.POINTS, scale, color)
+
+@DeprecationWarning
+def vis_point(node: Node, topic: str, point: np.ndarray, frame: str, scale: float = 0.1, color: List[float] = [1.0, 0.0, 0.0, 1.0]):
+    """Visualizes a point
+
+    Parameters
+    ----------
+    node : Node
+        The node that should publish the message
+    topic : str
+        The topic to publish the message to
+    point : np.ndarray
+        The point. Shape (2,)
+    frame : str
+        The TF frame the message should be associated with
+    scale : float, optional
+        The size of the visualized points, by default 0.1
+    color : List[float], optional
+        The RGBA color (in range 0.0-1.0) of the visualized points, by default red
+    """
+    vis_points(node, topic, point, frame, scale, color)
 
 def vis_path(node: Node, topic: str, points: np.ndarray, frame: str, scale: float = 0.1, color: List[float] = [1.0, 0.0, 0.0, 1.0]):
-    msg = Marker()
-    msg.header.stamp = node.get_clock().now().to_msg()
-    msg.header.frame_id = frame
-    msg.ns = topic
-    msg.id = 0
-    msg.type = Marker.LINE_STRIP
-    msg.points = [Point(x=point[0], y=point[1]) for point in points]
-    msg.pose.orientation.w = 1.0
-    msg.scale.x = scale
-    msg.color.r = color[0]
-    msg.color.g = color[1]
-    msg.color.b = color[2]
-    msg.color.a = color[3]
-    _pub_to_topic(node, topic, msg)
+    """Visualizes an path of points
+
+    Parameters
+    ----------
+    node : Node
+        The node that should publish the message
+    topic : str
+        The topic to publish the message to
+    points : np.ndarray
+        (N, 2) array of points
+    frame : str
+        The TF frame the message should be associated with
+    scale : float, optional
+        The size of the visualized points, by default 0.1
+    color : List[float], optional
+        The RGBA color (in range 0.0-1.0) of the visualized points, by default red
+    """
+    _vis_points(node, topic, points, frame, Marker.LINE_STRIP, scale, color)
 
 def vis_lines(node: Node, topic: str, lines: np.ndarray, frame: str, scale: float = 0.1, color: List[float] = [1.0, 0.0, 0.0, 1.0]):
-    msg = Marker()
-    msg.header.stamp = node.get_clock().now().to_msg()
-    msg.header.frame_id = frame
-    msg.ns = topic
-    msg.id = 0
-    msg.type = Marker.LINE_LIST
-    msg.points = [Point(x=point[0], y=point[1]) for point in lines.reshape(-1, 2)]
-    msg.pose.orientation.w = 1.0
-    msg.scale.x = scale
-    msg.color.r = color[0]
-    msg.color.g = color[1]
-    msg.color.b = color[2]
-    msg.color.a = color[3]
-    _pub_to_topic(node, topic, msg)
+    """Visualizes an array of 2D lines
 
+    Parameters
+    ----------
+    node : Node
+        The node that should publish the message
+    topic : str
+        The topic to publish the message to
+    points : np.ndarray
+        (N, 2, 2) array of lines. Each entry is a 2x2 matrix containing [[x1, y1], [x2, y2]]
+    frame : str
+        The TF frame the message should be associated with
+    scale : float, optional
+        The size of the visualized points, by default 0.1
+    color : List[float], optional
+        The RGBA color (in range 0.0-1.0) of the visualized points, by default red
+    """
+    _vis_points(node, topic, lines.reshape(-1, 2), frame, Marker.LINE_LIST, scale, color)
