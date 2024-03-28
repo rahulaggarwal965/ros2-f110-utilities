@@ -4,6 +4,7 @@ import numpy as np
 from geometry_msgs.msg import PointStamped, Point
 from rclpy.node import Node
 from rclpy.publisher import Publisher
+from rclpy.qos import QoSProfile, QoSDurabilityPolicy
 from sensor_msgs.msg import LaserScan
 from visualization_msgs.msg import Marker
 
@@ -19,7 +20,7 @@ def _pub_to_topic(node: Node, topic: str, msg):
 
     topic_to_pub: Dict[str, Publisher] = globals()["topic_to_pub"]
     if topic not in topic_to_pub:
-        topic_to_pub[topic] = node.create_publisher(type(msg), topic, 10)
+        topic_to_pub[topic] = node.create_publisher(type(msg), topic, QoSProfile(durability=QoSDurabilityPolicy.TRANSIENT_LOCAL, depth=10))
 
     topic_to_pub[topic].publish(msg)
 
