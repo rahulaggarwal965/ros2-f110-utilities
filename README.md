@@ -28,16 +28,16 @@ ament_target_dependencies(target utilities)
 ### Example Usage (Python)
 
 ```python
-from utilities.params import get_param
-get_param(...)
+from utilities.params import vis_points
+vis_points(...)
 ```
 
 ### Example Usage (C++)
 C++ utility functions will typically be namespaced under their module name.
 
 ```cpp
-#include "utilities/params.h"
-params::get_param(...)
+#include "utilities/vis.h"
+vis::vis_points(...)
 ```
 
 ## Tmux Sessions
