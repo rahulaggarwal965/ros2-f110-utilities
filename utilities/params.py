@@ -1,4 +1,6 @@
 import dataclasses
+from dataclasses import fields
+import functools
 from typing import List, TypeVar
 
 from deprecated import deprecated
@@ -72,6 +74,33 @@ def get_param(
     node.get_logger().info(f"{name.upper()}: {param}")
     return param
 
+def _rgetattr(obj, attr, *args):
+    def _getattr(obj, attr):
+        return getattr(obj, attr, *args)
+    return functools.reduce(_getattr, [obj] + attr.split('.'))
+
+def _rsetattr(obj, attr, val):
+    pre, _, post = attr.rpartition('.')
+    return setattr(_rgetattr(obj, pre) if pre else obj, post, val)
+
+def _traverse_config(node: Node, config: T, prefix: str = "") -> T:
+    assert dataclasses.is_dataclass(config) and not isinstance(config, type)
+
+    for field in fields(config):
+        full_param_name = prefix + field.name
+        param_default_value = getattr(config, field.name)
+        if dataclasses.is_dataclass(param_default_value) and not isinstance(param_default_value, type):
+            param_value = _traverse_config(node, param_default_value, prefix=full_param_name + ".")
+        else:
+            node.declare_parameter(full_param_name, param_default_value)
+            param_value = _parameter_value_to_python(node.get_parameter(full_param_name).get_parameter_value())
+            node.get_logger().info(f"{full_param_name.upper()}: {param_value}")
+
+        config.__setattr__(field.name, param_value)
+
+    return config
+    
+
 def register_config(node: Node, config: T) -> T:
     """Registers a dataclass config representing a set of ROS2 parameters. Provides the
     infrastructure for parameter updates.
@@ -89,19 +118,14 @@ def register_config(node: Node, config: T) -> T:
         A dataclass corresponding to the newly-set ROS2 parameters.
     """
     assert dataclasses.is_dataclass(config) and not isinstance(config, type)
-    config_dict = dataclasses.asdict(config)
 
-    # TODO(rahul): handle nested dataclassses/dicts
-    for param_name, param_default_value in config_dict.items():
-        node.declare_parameter(param_name, param_default_value)
-        param_value = _parameter_value_to_python(node.get_parameter(param_name).get_parameter_value())
-        config.__setattr__(param_name, param_value)
-        node.get_logger().info(f"{param_name.upper()}: {param_value}")
+    # TODO(rahul): handle nested dicts
+    _traverse_config(node, config)
 
     def parameters_callback(params: List[Parameter]) -> SetParametersResult:
         for param in params:
             new_param_value = _parameter_value_to_python(param.get_parameter_value())
-            config.__setattr__(param.name, new_param_value)
+            _rsetattr(config, param.name, new_param_value)
             node.get_logger().info(f"{param.name.upper()}: {new_param_value}")
 
         return SetParametersResult(successful=True)
