@@ -2,6 +2,8 @@ import time
 from typing import Dict, Tuple, Optional
 from contextlib import contextmanager
 
+__all__ = ["Perf"]
+
 class Perf():
     def __init__(self, window: int = 0):
         self.starts: Dict[str, float] = {}

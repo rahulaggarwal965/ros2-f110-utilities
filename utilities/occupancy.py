@@ -9,6 +9,8 @@ from nav_msgs.msg import OccupancyGrid as OccupancyGridMsg
 from PIL import Image
 from scipy.ndimage import binary_dilation, generate_binary_structure, iterate_structure
 
+__all__ = ["OccupancyGrid"]
+
 class OccupancyGrid():
     def __init__(
         self,
