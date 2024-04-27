@@ -2,6 +2,13 @@
 
 #include <cctype>
 #include <rclcpp/rclcpp.hpp>
+#include <rcl_interfaces/msg/set_parameters_result.hpp>
+
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && (_MSVC_LANG >= 202002L))
+#   define UTILITIES_PARAMS_CONFIG_STRUCT_ENABLED 1
+#else
+#   define UTILITIES_PARAMS_CONFIG_STRUCT_ENABLED 0
+#endif
 
 namespace params {
 
