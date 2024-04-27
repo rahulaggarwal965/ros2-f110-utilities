@@ -86,7 +86,7 @@ class OccupancyGrid():
         with map_yaml_file.open() as file:
             map_params = yaml.safe_load(file)
 
-        grid = np.where(np.asarray(Image.open(map_image_file).transpose(Image.FLIP_TOP_BOTTOM)) > 0, False, True)
+        grid = np.where(np.asarray(Image.open(map_image_file).transpose(Image.FLIP_TOP_BOTTOM)) > 210, False, True)
 
         occupancy_grid = OccupancyGrid(
                 frame="map",
