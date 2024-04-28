@@ -52,7 +52,7 @@ class OccupancyGrid():
         return in_grid_points
 
     def transform_indices(self, indices: np.ndarray) -> np.ndarray:
-        return np.fliplr(indices) * self.resolution + self.origin
+        return np.flip(indices, axis=-1) * self.resolution + self.origin
 
     def collision(self, point1: np.ndarray, point2: np.ndarray, collision_threshold: float = 50.0):
         num_points = int(np.ceil(np.linalg.norm(point2 - point1)) / self.resolution)
