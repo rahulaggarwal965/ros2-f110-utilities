@@ -65,8 +65,11 @@ def _vis_points(node: Node, topic: str, points: np.ndarray, frame: str, marker_t
     msg.ns = topic
     msg.id = 0
     msg.type = marker_type
-    msg.action = Marker.ADD
-    msg.points = [Point(x=point[0], y=point[1]) for point in points]
+    if points.size > 0:
+        msg.action = Marker.ADD
+        msg.points = [Point(x=point[0], y=point[1]) for point in points]
+    else:
+        msg.action = Marker.DELETEALL
     msg.pose.orientation.w = 1.0
     msg.scale.x = scale
     msg.scale.y = scale
